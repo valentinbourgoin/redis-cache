@@ -14,6 +14,8 @@ class RedisCache {
 
 	private $host;
 	private $port;
+
+	private $time;
  
 	/**
 	 * Private constructor
@@ -22,6 +24,7 @@ class RedisCache {
 	private function __construct() {
 		$this->host = (defined(REDIS_HOST)) ? REDIS_HOST : 'localhost';
 		$this->port = (defined(REDIS_PORT)) ? REDIS_PORT : '6397';
+		$this->time = (defined(CACHE_TIME)) ? CACHE_TIME : '3600';
 
 		try {			
 			$this->db = new Predis\Client(array(
@@ -65,7 +68,7 @@ class RedisCache {
 		if(!$result) {
 			$result = Database::getInstance()->fetch($query);
 			$this->db->set($key, serialize($result));
-			$this->db->expire($key, CACHE_TIME);
+			$this->db->expire($key, $this->time);
 		} else {
 			$result = unserialize($result);
 		}
